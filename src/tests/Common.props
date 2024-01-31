@@ -15,7 +15,7 @@
     <VldConfiguration Condition="'$(Configuration)' == 'Debug(Release)_StaticCrt'">Release</VldConfiguration>
     <VldConfiguration Condition="'$(Configuration)' == 'Release'">Release</VldConfiguration>
     <VldConfiguration Condition="'$(Configuration)' == 'Release_StaticCrt'">Release</VldConfiguration>
-    <VldToolset>v140</VldToolset>
+    <VldToolset>v143</VldToolset>
   </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>

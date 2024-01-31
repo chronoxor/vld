@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vld", "src\vld.vcxproj", "{0D30FFCB-45DA-4D2B-8E3C-81BC145BF2DE}"
 EndProject
@@ -69,6 +69,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vld_main_test", "src\tests\vld_main_test\vld_main_test_vs15.vcxproj", "{BB99EDE9-D039-4169-B26B-6BFD93C6AF8E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8C732490-DC1A-40C0-923F-1555B9141B80} = {8C732490-DC1A-40C0-923F-1555B9141B80}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder1", "NewFolder1", "{68A93D3F-81B6-46B8-B7B0-65B5D87CAF6A}"
+	ProjectSection(SolutionItems) = preProject
+		src\tests\Common.props = src\tests\Common.props
 	EndProjectSection
 EndProject
 Global
@@ -494,5 +499,8 @@ Global
 		{33F98E06-F44C-4E22-9E16-4C20F8238A95} = {281D5ACB-9ED2-496B-B19E-A75F4D4DA111}
 		{3719F504-3DF0-45F8-BC7A-4415804AC7C9} = {9F9CFA3A-F154-4069-89E3-19BDC6BD3A7D}
 		{BB99EDE9-D039-4169-B26B-6BFD93C6AF8E} = {9F9CFA3A-F154-4069-89E3-19BDC6BD3A7D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {49F83CBE-7127-4ABE-8E8E-254D88567B86}
 	EndGlobalSection
 EndGlobal

@@ -71,6 +71,8 @@ enum action_e {
 #define CRTDLLNAME   _T("msvcr120d.dll")
 #elif _MSC_VER == 1900	// VS 2015
 #define CRTDLLNAME   _T("ucrtbased.dll")
+#elif _MSC_VER == 1934	// VS 2022
+#define CRTDLLNAME   _T("ucrtbased.dll")
 #else
 #error Unsupported compiler
 #endif
@@ -95,6 +97,8 @@ enum action_e {
 #define CRTDLLNAME   _T("msvcr120.dll")
 #elif _MSC_VER == 1900	// VS 2015
 #define CRTDLLNAME   _T("ucrtbase.dll")
+#elif _MSC_VER == 1934	// VS 2022
+#define CRTDLLNAME   _T("ucrtbase.dll")
 #else
 #error Unsupported compiler
 #endif
@@ -112,34 +116,33 @@ static const int NUMDUPLEAKS = 3;            // Number of times to duplicate eac
 static const int ONCEINAWHILE = 10;          // Free a random block approx. once every...
 
 struct blockholder_t {
-    PVOID    block;
+    PVOID block;
     action_e action;
-    bool     leak;
+    bool leak;
 };
 
-typedef void* (__cdecl *free_t) (void* mem);
-typedef void* (__cdecl *malloc_t) (size_t size);
+using free_t = void* (__cdecl *)(void* mem);
+using malloc_t = void* (__cdecl *)(size_t size);
 
 struct threadcontext_t {
-    UINT  index;
-    BOOL  leaky;
+    UINT index;
+    BOOL leaky;
     DWORD seed;
     unsigned threadid;
 };
 
-__declspec(thread) blockholder_t *blocks = NULL;
-__declspec(thread) ULONG          freeBlock = (ULONG)0;
-__declspec(thread) ULONG          counts [numactions] = { 0 };
-__declspec(thread) IMalloc       *imalloc = NULL;
-__declspec(thread) free_t         pfree = NULL;
-__declspec(thread) malloc_t       pmalloc = NULL;
-__declspec(thread) HANDLE         threadheap;
-__declspec(thread) ULONG          total_allocs = 0;
+__declspec(thread) blockholder_t* blocks = NULL;
+__declspec(thread) ULONG freeBlock = (ULONG)0;
+__declspec(thread) ULONG counts[numactions] = {0};
+__declspec(thread) IMalloc* imalloc = NULL;
+__declspec(thread) free_t pfree = NULL;
+__declspec(thread) malloc_t pmalloc = NULL;
+__declspec(thread) HANDLE threadheap;
+__declspec(thread) ULONG total_allocs = 0;
 
-volatile           LONG           leaks_count = 0;
+volatile LONG leaks_count = 0;
 
-ULONG random (ULONG max)
-{
+ULONG random(ULONG max) {
     FLOAT d;
     FLOAT r;
     ULONG v;
@@ -147,24 +150,19 @@ ULONG random (ULONG max)
     r = ((FLOAT)rand()) / ((FLOAT)RAND_MAX);
     r *= ((FLOAT)max);
     d = r - ((ULONG)r);
-    if (d >= 0.5) {
-        v = ((ULONG)r) + 1;
-    }
-    else {
-        v = (ULONG)r;
-    }
+    if (d >= 0.5) { v = ((ULONG)r) + 1; }
+    else { v = (ULONG)r; }
 
     return v;
 }
 
-VOID allocateblock (action_e action, SIZE_T size)
-{
-    HMODULE  crt;
-    ULONG    index;
-    ULONG    index2;
-    LPCSTR   name;
-    PVOID   *pblock;
-    HRESULT  status;
+VOID allocateblock(action_e action, SIZE_T size) {
+    HMODULE crt;
+    ULONG index;
+    ULONG index2;
+    LPCSTR name;
+    PVOID* pblock;
+    HRESULT status;
 
     // Find the first unused index.
     index = freeBlock;
@@ -195,16 +193,14 @@ VOID allocateblock (action_e action, SIZE_T size)
             crt = LoadLibrary(CRTDLLNAME);
             assert(crt != NULL);
             pmalloc = (malloc_t)GetProcAddress(crt, "malloc");
-            assert(pmalloc !=  NULL);
+            assert(pmalloc != NULL);
         }
         *pblock = pmalloc(size);
         break;
 
     case a_heapalloc:
         name = "HeapAlloc";
-        if (threadheap == NULL) {
-            threadheap = HeapCreate(0x0, 0, 0);
-        }
+        if (threadheap == NULL) { threadheap = HeapCreate(0x0, 0, 0); }
         *pblock = HeapAlloc(threadheap, 0x0, size);
         break;
 
@@ -244,9 +240,8 @@ VOID allocateblock (action_e action, SIZE_T size)
     strncpy_s((char*)*pblock, size, name, _TRUNCATE);
 }
 
-VOID freeblock (ULONG index)
-{
-    PVOID   block;
+VOID freeblock(ULONG index) {
+    PVOID block;
     HMODULE crt;
 
     block = blocks[index].block;
@@ -293,25 +288,18 @@ VOID freeblock (ULONG index)
         assert(FALSE);
     }
     blocks[index].block = NULL;
-    if (index < freeBlock)
-        freeBlock = index;
+    if (index < freeBlock) freeBlock = index;
     counts[blocks[index].action]--;
     total_allocs--;
 }
 
-VOID recursivelyallocate (UINT depth, action_e action, SIZE_T size)
-{
-    if (depth == 0) {
-        allocateblock(action, size);
-    }
-    else {
-        recursivelyallocate(depth - 1, action, size);
-    }
+VOID recursivelyallocate(UINT depth, action_e action, SIZE_T size) {
+    if (depth == 0) { allocateblock(action, size); }
+    else { recursivelyallocate(depth - 1, action, size); }
 }
 
-unsigned __stdcall threadproc_test (LPVOID param)
-{
-    threadcontext_t* context = (threadcontext_t*)param;
+unsigned __stdcall threadproc_test(LPVOID param) {
+    auto context = (threadcontext_t*)param;
     assert(context);
 
     blocks = new blockholder_t[MAXBLOCKS];
@@ -322,14 +310,12 @@ unsigned __stdcall threadproc_test (LPVOID param)
 
     srand(context->seed);
 
-    BOOL   allocate_more = TRUE;
+    BOOL allocate_more = TRUE;
     while (allocate_more) {
         // Select a random allocation action and a random size.
-        action_e action = (action_e)random(numactions - 1);
+        auto action = (action_e)random(numactions - 1);
         SIZE_T size = random(MAXSIZE);
-        if (size < MINSIZE) {
-            size = MINSIZE;
-        }
+        if (size < MINSIZE) { size = MINSIZE; }
         if (counts[action] == MAXALLOC) {
             // We've done enough of this type of allocation. Select another.
             continue;
@@ -338,17 +324,13 @@ unsigned __stdcall threadproc_test (LPVOID param)
         // Allocate a block, using recursion to build up a stack of random
         // depth.
         UINT depth = random(MAXDEPTH);
-        if (depth < MINDEPTH) {
-            depth = MINDEPTH;
-        }
+        if (depth < MINDEPTH) { depth = MINDEPTH; }
         recursivelyallocate(depth, action, size);
 
         // Every once in a while, free a random block.
         if (random(ONCEINAWHILE) == ONCEINAWHILE) {
             ULONG index = random(total_allocs);
-            if (blocks[index].block != NULL) {
-                freeblock(index);
-            }
+            if (blocks[index].block != NULL) { freeblock(index); }
         }
 
         // See if we have allocated enough blocks using each type of action.
@@ -374,66 +356,53 @@ unsigned __stdcall threadproc_test (LPVOID param)
                     if (blocks[index].action != a_ignored)
                         InterlockedIncrement(&leaks_count);
                 }
-            } while (leaks_selected < (1 + NUMDUPLEAKS));
+            }
+            while (leaks_selected < (1 + NUMDUPLEAKS));
         }
     }
 
     // Free all blocks except for those marked as leaks.
-    for (ULONG index = 0; index < MAXBLOCKS; index++) {
-        if ((blocks[index].block != NULL) && (blocks[index].leak == FALSE)) {
-            freeblock(index);
-        }
-    }
+    for (ULONG index = 0; index < MAXBLOCKS; index++) { if ((blocks[index].block != NULL) && (blocks[index].leak == FALSE)) { freeblock(index); } }
 
     // Do a sanity check.
-    if (context->leaky) {
-        assert(total_allocs == (numactions * (1 + NUMDUPLEAKS)));
-    }
-    else {
-        assert(total_allocs == 0);
-    }
+    if (context->leaky) { assert(total_allocs == (numactions * (1 + NUMDUPLEAKS))); }
+    else { assert(total_allocs == 0); }
 
     delete[] blocks;
     return 0;
 }
 
-void RunTestSuite()
-{
-    if (!(VLDGetOptions() & VLD_OPT_SAFE_STACK_WALK))
-    {
+void RunTestSuite() {
+    if (!(VLDGetOptions() & VLD_OPT_SAFE_STACK_WALK)) {
         MAXALLOC = 1000;
         NUMTHREADS = 63;
     }
-    else
-    {
+    else {
         MAXALLOC = 10;
         NUMTHREADS = 15;
     }
     _ASSERT(NUMTHREADS <= MAXIMUM_WAIT_OBJECTS);
     MAXBLOCKS = (MAXALLOC * numactions);
 
-    threadcontext_t* contexts = new threadcontext_t[NUMTHREADS];
+    auto contexts = new threadcontext_t[NUMTHREADS];
 
     // Select a random thread to be the leaker.
     UINT leakythread = random(NUMTHREADS - 1);
-    HANDLE* threads = new HANDLE[NUMTHREADS];
+    auto threads = new HANDLE[NUMTHREADS];
 
     for (UINT index = 0; index < NUMTHREADS; ++index) {
         contexts[index].index = index;
-        if (index == leakythread)
-            contexts[index].leaky = TRUE;
-        else
-            contexts[index].leaky = FALSE;
+        if (index == leakythread) contexts[index].leaky = TRUE;
+        else contexts[index].leaky = FALSE;
         contexts[index].seed = random(RAND_MAX);
-        HANDLE hthread = (HANDLE)_beginthreadex(NULL, 0, threadproc_test, &contexts[index], 0, &contexts[index].threadid);
+        auto hthread = (HANDLE)_beginthreadex(NULL, 0, threadproc_test, &contexts[index], 0, &contexts[index].threadid);
         threads[index] = hthread;
     }
 
     // Wait for all threads to terminate.
     BOOL wait_for_all = TRUE;
     DWORD result = WaitForMultipleObjects(NUMTHREADS, threads, wait_for_all, INFINITE);
-    switch (result)
-    {
+    switch (result) {
     case WAIT_OBJECT_0:
         _tprintf(_T("All threads finished correctly.\n"));
         break;
@@ -443,24 +412,23 @@ void RunTestSuite()
     case WAIT_TIMEOUT:
         _tprintf(_T("All threads timed out\n"));
         break;
-    case WAIT_FAILED:
-        {
-            _tprintf(_T("Function call to Wait failed with unknown error\n"));
-            TCHAR lpMsgBuf[MAX_PATH] = {0};
-            FormatMessage(
-                FORMAT_MESSAGE_FROM_SYSTEM |
-                FORMAT_MESSAGE_IGNORE_INSERTS,
-                NULL,
-                GetLastError(),
-                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                lpMsgBuf,
-                MAX_PATH,
-                NULL );
+    case WAIT_FAILED: {
+        _tprintf(_T("Function call to Wait failed with unknown error\n"));
+        TCHAR lpMsgBuf[MAX_PATH] = {0};
+        FormatMessage(
+            FORMAT_MESSAGE_FROM_SYSTEM |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL,
+            GetLastError(),
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            lpMsgBuf,
+            MAX_PATH,
+            NULL);
 
-            _tprintf(_T("%s"), lpMsgBuf);
-        }
+        _tprintf(_T("%s"), lpMsgBuf);
+    }
 
-        break;
+    break;
     default:
         _tprintf(_T("Some other return value\n"));
         break;
@@ -469,19 +437,17 @@ void RunTestSuite()
     delete[] threads;
 }
 
-TEST(TestSuit, MultiThread)
-{
+TEST(TestSuit, MultiThread) {
     leaks_count = 0;
 
     VLDMarkAllLeaksAsReported();
     RunTestSuite();
     int leaks = static_cast<int>(VLDGetLeaksCount());
-    if (leaks_count != leaks)
-        VLDReportLeaks();
+    if (leaks_count != leaks) VLDReportLeaks();
     ASSERT_EQ(leaks_count, leaks);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     int res = RUN_ALL_TESTS();
     VLDMarkAllLeaksAsReported();

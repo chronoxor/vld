@@ -33,6 +33,8 @@
 #define CRTDLLNAME   _T("msvcr120d.dll")
 #elif _MSC_VER == 1900	// VS 2015
 #define CRTDLLNAME   _T("ucrtbased.dll")
+#elif _MSC_VER == 1934	// VS 2022
+#define CRTDLLNAME   _T("ucrtbased.dll")
 #else
 #error Unsupported compiler
 #endif
@@ -56,6 +58,8 @@
 #elif _MSC_VER == 1800	// VS 2013
 #define CRTDLLNAME   _T("msvcr120.dll")
 #elif _MSC_VER == 1900	// VS 2015
+#define CRTDLLNAME   _T("ucrtbase.dll")
+#elif _MSC_VER == 1934	// VS 2022
 #define CRTDLLNAME   _T("ucrtbase.dll")
 #else
 #error Unsupported compiler
