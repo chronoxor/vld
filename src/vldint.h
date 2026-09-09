@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Visual Leak Detector - VisualLeakDetector Class Definition
-//  Copyright (c) 2005-2014 VLD Team
+//  Copyright (c) 2005-2026 VLD Team
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -49,11 +49,7 @@
 #define SELFTESTTEXTA       "Memory Leak Self-Test"
 #define SELFTESTTEXTW       L"Memory Leak Self-Test"
 #define VLDREGKEYPRODUCT    L"Software\\Visual Leak Detector"
-#ifndef WIN64
-#define VLDDLL				"vld_x86.dll"
-#else
-#define VLDDLL				"vld_x64.dll"
-#endif
+#define VLDDLL              "vld.dll"
 
 // The Visual Leak Detector APIs.
 extern "C" __declspec(dllexport) void VLDDisable ();
@@ -161,14 +157,14 @@ typedef Set<VLD_REPORT_HOOK> ReportHookSet;
 // detection status (enabled or disabled) and the address that initiated the
 // current allocation is stored here.
 struct tls_t {
-    context_t	context;       	  // Address of return address at the first call that entered VLD's code for the current allocation.
-    UINT32	    flags;            // Thread-local status flags:
+    context_t   context;          // Address of return address at the first call that entered VLD's code for the current allocation.
+    UINT32      flags;            // Thread-local status flags:
 #define VLD_TLS_DEBUGCRTALLOC 0x1 //   If set, the current allocation is a CRT allocation.
-#define VLD_TLS_DISABLED 0x2 	  //   If set, memory leak detection is disabled for the current thread.
-#define VLD_TLS_ENABLED  0x4 	  //   If set, memory leak detection is enabled for the current thread.
+#define VLD_TLS_DISABLED 0x2      //   If set, memory leak detection is disabled for the current thread.
+#define VLD_TLS_ENABLED  0x4      //   If set, memory leak detection is enabled for the current thread.
 #define VLD_TLS_UCRT     0x8      //   If set, the current allocation is a UCRT allocation.
-    UINT32	    oldFlags;         // Thread-local status old flags
-    DWORD 	    threadId;         // Thread ID of the thread that owns this TLS structure.
+    UINT32      oldFlags;         // Thread-local status old flags
+    DWORD       threadId;         // Thread ID of the thread that owns this TLS structure.
     HANDLE      heap;
     LPVOID      blockWithoutGuard; // Store pointer to block.
     LPVOID      newBlockWithoutGuard;

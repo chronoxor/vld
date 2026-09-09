@@ -4,11 +4,7 @@
 #include "../../vld.h"
 #include <assert.h>
 
-#ifdef _WIN64
-    static const TCHAR* sVld_dll = _T("vld_x64.dll");
-#else
-    static const TCHAR* sVld_dll = _T("vld_x86.dll");
-#endif
+static const TCHAR* sVld_dll = _T("vld.dll");
 
 void CallVLDExportedMethod(const CHAR* function)
 {
@@ -111,4 +107,3 @@ void RunMFCLoaderTests(HMODULE hmfcLib, bool resolve)
         CallVLDExportedMethod("VLDResolveCallstacks"); // This requires ansi, not Unicode strings
     }
 }
-

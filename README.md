@@ -24,7 +24,7 @@ We encourage developers who've added their own features, or fixed bugs they've f
 
 * [Source code](https://github.com/KindDragon/vld)
 
-Copyright © 2005-2024 VLD Team
+Copyright © 2005-2026 VLD Team
 
  [1]: https://github.com/KindDragon/vld/wiki
  [2]: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=N3QTYHP9LH6UY&lc=GB&item_name=Visual%20Leak%20Detector&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted

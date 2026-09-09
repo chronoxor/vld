@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Visual Leak Detector - Import Library Header
-//  Copyright (c) 2005-2014 VLD Team
+//  Copyright (c) 2005-2026 VLD Team
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,7 @@ typedef void*          VLD_HMODULE;
 #error[VLD COMPILE ERROR] '#include <vld.h>' should appear before '#include <afxwin.h>' in file stdafx.h
 #endif
 
-#pragma comment(lib, __FILE__"\\..\\vld.lib")
+#pragma comment(lib, "vld.lib")
 
 // Force a symbolic reference to the global VisualLeakDetector class object from
 // the DLL. This ensures that the DLL is loaded and linked with the program,

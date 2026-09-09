@@ -75,11 +75,7 @@ BEGIN
             VALUE "FileVersion", VERSION_STRING
             VALUE "InternalName", "vld"
             VALUE "LegalCopyright", VERSION_COPYRIGHT
-#ifndef WIN64
-            VALUE "OriginalFilename", "vld_x86.dll"
-#else
-            VALUE "OriginalFilename", "vld_x64.dll"
-#endif
+            VALUE "OriginalFilename", "vld.dll"
             VALUE "ProductName", "Visual Leak Detector"
             VALUE "ProductVersion", VERSION_STRING
         END

@@ -13,49 +13,49 @@
 
 // Name of the debug C Runtime Library DLL on this system
 #ifdef _DEBUG
-#if _MSC_VER == 1400	// VS 2005
+#if _MSC_VER == 1400    // VS 2005
 #ifdef _DLL
 #define CRTDLLNAME   _T("msvcr80d.dll")
 #else
 #define CRTDLLNAME   _T("msvcrt.dll")
 #endif
-#elif _MSC_VER == 1500	// VS 2008
+#elif _MSC_VER == 1500  // VS 2008
 #ifdef _DLL
 #define CRTDLLNAME   _T("msvcr90d.dll")
 #else
 #define CRTDLLNAME   _T("msvcrt.dll")
 #endif
-#elif _MSC_VER == 1600	// VS 2010
+#elif _MSC_VER == 1600  // VS 2010
 #define CRTDLLNAME   _T("msvcr100d.dll")
-#elif _MSC_VER == 1700	// VS 2012
+#elif _MSC_VER == 1700  // VS 2012
 #define CRTDLLNAME   _T("msvcr110d.dll")
-#elif _MSC_VER == 1800	// VS 2013
+#elif _MSC_VER == 1800  // VS 2013
 #define CRTDLLNAME   _T("msvcr120d.dll")
-#elif _MSC_VER == 1900	// VS 2015
+#elif _MSC_VER == 1900  // VS 2015
 #define CRTDLLNAME   _T("ucrtbased.dll")
 #else
 #error Unsupported compiler
 #endif
 #else
-#if _MSC_VER == 1400	// VS 2005
+#if _MSC_VER == 1400    // VS 2005
 #ifdef _DLL
 #define CRTDLLNAME   _T("msvcr80.dll")
 #else
 #define CRTDLLNAME   _T("msvcrt.dll")
 #endif
-#elif _MSC_VER == 1500	// VS 2008
+#elif _MSC_VER == 1500  // VS 2008
 #ifdef _DLL
 #define CRTDLLNAME   _T("msvcr90.dll")
 #else
 #define CRTDLLNAME   _T("msvcrt.dll")
 #endif
-#elif _MSC_VER == 1600	// VS 2010
+#elif _MSC_VER == 1600  // VS 2010
 #define CRTDLLNAME   _T("msvcr100.dll")
-#elif _MSC_VER == 1700	// VS 2012
+#elif _MSC_VER == 1700  // VS 2012
 #define CRTDLLNAME   _T("msvcr110.dll")
-#elif _MSC_VER == 1800	// VS 2013
+#elif _MSC_VER == 1800  // VS 2013
 #define CRTDLLNAME   _T("msvcr120.dll")
-#elif _MSC_VER == 1900	// VS 2015
+#elif _MSC_VER == 1900  // VS 2015
 #define CRTDLLNAME   _T("ucrtbase.dll")
 #else
 #error Unsupported compiler
@@ -71,7 +71,7 @@ private:
     void* l;
 };
 
-static MemoryLeak ml; 
+static MemoryLeak ml;
 
 typedef void* (__cdecl *free_t) (void* mem);
 typedef void* (__cdecl *malloc_t) (size_t size);
@@ -115,11 +115,7 @@ static const int recursion = 3;
     return succeded ? ::testing::AssertionSuccess() : (::testing::AssertionSuccess() << resultStream.str());
 }
 
-#ifdef _WIN64
-static const TCHAR* sVld_dll = _T("vld_x64.dll");
-#else
-static const TCHAR* sVld_dll = _T("vld_x86.dll");
-#endif
+static const TCHAR* sVld_dll = _T("vld.dll");
 
 typedef const wchar_t*(*VldGetCallstack_func)(void* alloc, BOOL showInternalFrames);
 static VldGetCallstack_func VldInternalGetAllocationCallstack = NULL;
